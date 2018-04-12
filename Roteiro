@@ -1,0 +1,54 @@
+rem DOCUMENTAÇÃO PARA INSTALAÇÃO DO WINDOWS CONTAINER
+https://docs.microsoft.com/en-us/virtualization/windowscontainers/quick-start/quick-start-windows-10
+
+rem ARTIGO SOBRE COMO USAR O DOCKER LINUX E WINDOWS CONTAINER NO WINDOWS 10
+https://stefanscherer.github.io/run-linux-and-windows-containers-on-windows-10/
+
+rem HABILITAR OS CONTAINERS E HYPER-V
+Enable-WindowsOptionalFeature -Online -FeatureName containers -All
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+
+rem BAIXAR A IMAGEM BASE PARA EXECUÇÃO DO NODEJS
+rem C:\Users\Jesiel\Documents\Dockerfiles\dockerfiles-windows\node\6.9\nano\Dockerfile
+docker pull stefanscherer/node-windows:6.7.0-nano
+
+rem APRESENTAR A VERSÃO DO CLIENTE E SERVIDOR (LINUX)
+docker version
+
+rem VALIDAR O STATUS DA PORTA
+nmap -p 8080 localhost | findstr 8080
+
+rem RODAR O RANCHER EM UM CONTAINER LINUX (VIA HYPER-V)
+docker run -d --restart=unless-stopped -p 8080:8080 rancher/server
+
+rem VALIDAR O STATUS DA PORTA NOVAMENTE
+nmap -p 8080 localhost | findstr 8080
+
+rem TROCAR ENTRE CONTAINER LINUX PARA CONTAINER WINDOWS
+& 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+
+rem APRESENTAR A VERSÃO DO CLIENTE E SERVIDOR (WINDOWS)
+docker version
+
+rem VERIFICAR SE EXISTE ALGUM CONTAINER RODANDO
+docker ps
+
+rem VERIFICAR QUAIS IMAGENS QUE EXISTEM 
+docker images
+
+rem ACESSAR A PASTA QUE CONTEM UM DOCKERFILE DE EXEMPLO PRA CONTAINER WINDOWS
+cd C:\Users\Jesiel\Documents\Dockerfiles\nodejs-devopsday
+
+rem CRIAR UMA NOVA IMAGEM A PARTIR DO DOCKERFILE DE EXEMPLO
+docker build -t nodejs-devopsday .
+
+rem RODAR UM CONTAINER A PARTIR DA NOVA IMAGEM CRIADA
+docker run -p 80:80 -d nodejs-devopsday
+
+rem RECUPERAR O ENDEREÇO IP DO NOVO CONTAINER
+docker inspect -f "{{ .NetworkSettings.Networks.nat.IPAddress }}" <ID>
+
+rem ACESSAR O PROMPT DE COMANDO DO NOVO CONTAINER
+docker exec -it 192e cmd
+
+rem MOSTRAR O GERENCIAMENTO A PARTIR DO RANCHER
